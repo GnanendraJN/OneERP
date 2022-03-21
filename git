@@ -1,0 +1,13 @@
+git status - to check status
+git branch
+  164  git add .
+  165  git status
+  166  git commit -am "Created two simple APIs"
+  167  git status
+  168  git push origin 02-helloworld
+  169  git show-branch
+  170  git checkout master
+  171  git show-branch
+  172  git merge 02-helloworld
+  173  git show-branch
+  174  git push origin master
