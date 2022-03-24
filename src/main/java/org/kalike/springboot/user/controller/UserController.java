@@ -1,11 +1,17 @@
 package org.kalike.springboot.user.controller;
 
+import org.kalike.springboot.exceptions.UserExistsException;
+import org.kalike.springboot.exceptions.UserNotFoundException;
 import org.kalike.springboot.user.entities.User;
 import org.kalike.springboot.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,21 +33,38 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public Optional<User> getUserById(@PathVariable("id") Long id){
+    public Optional<User> getUserById(@PathVariable("id") Long id)  {
 
         System.out.println("Inside controoler laye . Finding userd id r " + id);
-        return userService.getUserById(id);
+        try{
+            return userService.getUserById(id);
+        }catch (UserNotFoundException exp){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, exp.getMessage());
+        }
     }
 
     @PostMapping("/users")
-    public void createUser(@RequestBody User user){
-        userService.saveUser(user);
+    public ResponseEntity<Void> createUser(@RequestBody User user, UriComponentsBuilder builder){
+        try {
+            User created = userService.createUser(user);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(builder.path("/users/{id}").buildAndExpand(user.getId()).toUri());
+            return new ResponseEntity<>(headers, HttpStatus.CREATED);
+        }catch (UserExistsException exp){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exp.getMessage());
+        }
     }
 
     @PutMapping("/users/{id}")
-    public void updateUserById(@PathVariable("id") Long id, @RequestBody User user){
-        user.setId(id);
-        userService.updateUserById(user);
+    public void updateUserById(@PathVariable("id") Long id, @RequestBody User user)  {
+        //user.setId(id);
+        try {
+
+            User updatedUser = userService.updateUserById(id, user);
+        }catch(UserNotFoundException exp){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exp.getMessage());
+        }
     }
 
     @DeleteMapping("/users/{id}")
