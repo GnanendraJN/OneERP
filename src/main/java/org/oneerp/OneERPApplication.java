@@ -1,13 +1,13 @@
-package org.kalike.springboot;
+package org.oneerp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SpringBootRestApplication {
+public class OneERPApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SpringBootRestApplication.class, args);
+		SpringApplication.run(OneERPApplication.class, args);
 	}
 
 }
